@@ -12,13 +12,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run Test
-        run: npm run test
-
+      # -    name: Print Node Version
+      #      run: node -v
+      -    name: Install Dependencies
+           run: npm ci
+      -    name: Run Test
+           run: npm run test
   deploy:
     runs-on: ubuntu-latest
     needs: test  # Ensure that the deploy job runs after the test job
@@ -30,12 +29,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build Project
-        run: npm run build
-
-      - name: Deploy
-        run: echo "Deploy Successful"
+    - name: Install Dependencies
+      run: npm ci
+    - name: Build Project
+      run: npm run build
+    - name: Deploy
+      run: echo "Deploy Sucessfull"
+      
