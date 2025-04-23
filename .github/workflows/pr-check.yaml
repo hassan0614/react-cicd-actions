@@ -45,19 +45,7 @@ jobs:
           RESPONSE=$(curl -s https://api.openai.com/v1/chat/completions \
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -H "Content-Type: application/json" \
-            -d @- <<EOF
-{
-  "model": "gpt-4",
-  "messages": [
-    {
-      "role": "user",
-      "content": "Here is a GitHub pull request diff:\n\n$DIFF\n\nExplain what this PR does, what was changed, and why. Summarize in plain English for developers."
-    }
-  ],
-  "temperature": 0.5
-}
-EOF
-          )
+            -d "{\"model\":\"gpt-4\",\"messages\":[{\"role\":\"user\",\"content\":\"Here is a GitHub pull request diff:\n\n$DIFF\n\nExplain what this PR does, what was changed, and why. Summarize in plain English for developers.\"}],\"temperature\":0.5}")
 
           COMMENT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
 
@@ -66,4 +54,4 @@ EOF
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$REPO/issues/$PR_NUMBER/comments \
-            -d "$(jq -nc --arg body "### 🤖 PR Summary by AI:\n$COMMENT" '{body: $body}')"
+            -d "{\"body\":\"### 🤖 PR Summary by AI:\n$COMMENT\"}"
