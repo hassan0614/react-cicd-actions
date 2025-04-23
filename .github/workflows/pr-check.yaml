@@ -1,3 +1,35 @@
+name: PR Conflict Checker
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-merge-conflict:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Attempt to merge with base
+        id: merge_check
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          git checkout -b merge-check
+          if git merge origin/${{ github.event.pull_request.base.ref }} --no-commit --no-ff; then
+            echo "merge_conflict=false" >> $GITHUB_OUTPUT
+          else
+            echo "merge_conflict=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Generate and post explanation if conflict
         if: steps.merge_check.outputs.merge_conflict == 'true'
         env:
